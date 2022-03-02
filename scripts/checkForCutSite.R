@@ -9,11 +9,10 @@
 #' @return A modified version of \code{input} with only those lines containing a cutsite for the specified enzyme
 checkForCutSite <- function(dat,
                             number,
-                            config='/users/mscherer/cluster/project/Methylome/src/selection_pipeline/config.yaml',
+                            config='../config.yaml',
                             sort.col=c('mean.diff', 'mean.diff.1', 'mean.diff.2'),
                             decreasing=TRUE){
-  .libPaths(c('/users/mscherer/R/',.libPaths()))
-  
+
   require(yaml)
   require(data.table)
   require(RnBeads)

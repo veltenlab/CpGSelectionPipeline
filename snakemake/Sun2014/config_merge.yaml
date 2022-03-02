@@ -1,5 +1,0 @@
-samples: ['Young10',
-'Young12',
-'Old10',
-'Old12']
-sample_map: '/users/lvelten/project/Methylome/data/external/Sun2014/SraRunTable.txt'

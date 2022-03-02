@@ -1,6 +1,5 @@
 validateMBDesigner <- function(csv,
-                            config='/users/mscherer/cluster/project/Methylome/src/selection_pipeline/config.yaml'){
-  #.libPaths(c('/users/mscherer/R/',.libPaths()))
+                            config='../config.yaml'){
   
   require(yaml)
   require(data.table)
@@ -149,10 +148,9 @@ validateMBDesigner <- function(csv,
   return(dat)
 }
 
-# What happens with line 499, Always_methylated19
-mb_id <- '4247'
-res <- validateMBDesigner(paste0('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_output/Designer/', mb_id, '-design-summary.csv'))
-input <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_input/frame_cleartext.csv')
+mb_id <- '1234'
+res <- validateMBDesigner(paste0('MB_output/Designer/', mb_id, '-design-summary.csv'))
+input <- read.csv('MB_input/frame_cleartext.csv')
 output.gr <- makeGRangesFromDataFrame(res, seqnames.field = 'chr', start.field = 'amplicon_start', end.field = 'amplicon_end')
 min_dists <- c()
 for(i in 1:length(output.gr)){
@@ -167,7 +165,7 @@ if(any(!(1:nrow(res)%in%subjectHits(op)))){
   print('Something is wrong')
 }
 res <- data.frame(res[subjectHits(op), ], input[queryHits(op), ])
-write.csv(res, paste0('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_output/Designer/', mb_id, '-design-summary_annotated.csv'))
+write.csv(res, paste0('MB_output/Designer/', mb_id, '-design-summary_annotated.csv'))
 
 library(ggsci)
 plot_theme <- theme(panel.background = element_blank(),
@@ -191,7 +189,7 @@ for(ty in unique(plot_base$Type)){
   to_plot <- rbind(to_plot, data.frame(plyr::count(plot_base[plot_base$Type%in%ty, 'AgingDMC']), Type=ty))
 }
 plot <- ggplot(to_plot, aes(x="", y=freq, fill=x))+geom_bar(stat="identity", width=1, color="white")+plot_theme+scale_fill_tron()+ylab("")+xlab("")+facet_wrap(Type~., ncol=3)
-ggsave('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/plots/amplicons_aging.pdf',
+ggsave('amplicons_aging.pdf',
        height=100,
        width=100,
        unit='mm')
@@ -201,7 +199,7 @@ for(ty in unique(plot_base$Type)){
   to_plot <- rbind(to_plot, data.frame(plyr::count(plot_base[plot_base$Type%in%ty, 'Enhancer']), Type=ty))
 }
 plot <- ggplot(to_plot, aes(x="", y=freq, fill=x))+geom_bar(stat="identity", width=1, color="white")+plot_theme+scale_fill_tron()+ylab("")+xlab("")+facet_wrap(Type~., ncol=3)
-ggsave('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/plots/amplicons_enhancer.pdf',
+ggsave('amplicons_enhancer.pdf',
        height=100,
        width=100,
        unit='mm')

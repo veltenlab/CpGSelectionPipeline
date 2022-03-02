@@ -2,19 +2,17 @@
 #' This file computes reliable DMRs from and RnBeads output directory. We define reliable as thos
 #' that are consistently methylated/unmethylated per cell type in all pairwise comparison.
 
-#.libPaths(c('/users/mscherer/R/R-4.1.2',.libPaths()))
-
 library(yaml)
 library(data.table)
 library(RnBeads)
 library(RnBeads.mm10)
 
-report <- '/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/rnb_report_20211020_differential/'
-output <- '/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/'
-config_file <- '/users/lvelten/project/Methylome/src/selection_pipeline/config.yaml'
+report <- 'RnBeads/rnb_report'
+output <- 'RnBeads/DMRs/'
+config_file <- '../config.yaml'
 config <- yaml.load_file(config_file)
 
-source('/users/lvelten/project/Methylome/src/selection_pipeline/checkForCutSite.R')
+source('../script/checkForCutSite.R')
 
 all.comparisons <- list.files(file.path(report,'differential_methylation_data'), full.names=TRUE, pattern = 'diffMethTable_site')
 system(paste0('rm -rf ', output,'/high_*.csv'))
@@ -25,13 +23,6 @@ dmrs <- lapply(all.comparisons,function(comp){
     group.names <- colnames(diff.table)[grepl('sd.',colnames(diff.table))]
     group.names <- gsub('sd.','', group.names)
     print(paste('Processing diffMethTable for ', group.names[1], 'and', group.names[2]))
-#    sds.first <- diff.table[[paste0('sd.',group.names[1])]]
-#    sds.second <- diff.table[[paste0('sd.',group.names[2])]]
-#    se.sd.first <- sd(sds.first)#/sqrt(length(sds.first))
-#    se.sd.second <- sd(sds.second)#/sqrt(length(sds.second))
-#    low.sds <- (sds.first<(mean(sds.first)+2*se.sd.first)) & (sds.second<(mean(sds.second)+2*se.sd.second))
-#    diff.table <- diff.table[low.sds,]
-#    diff.table <- diff.table[diff.table$diffmeth.p.val<config[['dmcs']][['diffmeth_pval']],]
     diff.table <- diff.table[abs(diff.table$mean.diff)>config[['dmcs']][['min_diff']],]
     row.names(diff.table) <- paste0(diff.table$Chromosome, '_', diff.table$Start)
     diff.table[['comparison']] <- paste(group.names[1], 'vs.', group.names[2])

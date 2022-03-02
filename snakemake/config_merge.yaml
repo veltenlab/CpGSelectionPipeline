@@ -1,5 +1,0 @@
-samples: ['GSM1274432',
-'GSM1274433',
-'GSM1274434',
-'GSM1274435']
-sample_map: '/users/lvelten/project/Methylome/data/external/Cabezas/raw/SraRunTable.txt'

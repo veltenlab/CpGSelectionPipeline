@@ -1,7 +1,6 @@
 validateMBDesigner <- function(csv,
-                            config='/users/mscherer/cluster/project/Methylome/src/selection_pipeline/config.yaml'){
-  #.libPaths(c('/users/mscherer/R/',.libPaths()))
-  
+                            config='../config.yaml'){
+
   require(yaml)
   require(data.table)
   require(RnBeads)
@@ -9,7 +8,6 @@ validateMBDesigner <- function(csv,
   
   suppressPackageStartupMessages(library(BSgenome.Mmusculus.UCSC.mm10))
   genome <- BSgenome.Mmusculus.UCSC.mm10
-  #dat <- read.csv(csv)
   dat <- read.table(csv, sep='\t')
   hox_cluster <- c('HoxA'=GRanges('chr6:52150000-52275000'),
                    'HoxB'=GRanges('chr11:96280000-96375000'),
@@ -40,17 +38,12 @@ validateMBDesigner <- function(csv,
   dat$cutsiteInRegion <- NA
   dat$gene <- NA
   dat$promoter <- NA
-#  dat$enhancer_annotation <- NA
-#  dat$enhancer_annotation_gene_name <- NA
   dat$pu1_motif <- NA
   dat$pu1_chip <- NA
   dat$Hox <- NA
   dat$GCContent <- NA
   dat$CpGCount <- NA
   dat$HhaCutsites <- NA
-#  dat$ClosestVariableGene <- NA
-#  dat$ClosestVariableGeneDistance <- NA
-#  dat$AgingDMC <- NA
   dat[hema.motifs$TF] <- NA
   tfs.files.all <- list.files(config[['annotations']][['tf_chip']],full.names=TRUE)
   tfs.all <- gsub('.bed', '', list.files(config[['annotations']][['tf_chip']]))
@@ -93,34 +86,12 @@ validateMBDesigner <- function(csv,
     }else{
       dat$gene[i] <- NA
     }
-#    closest_variable_gene <- distance(region.gr, genes[variable_genes])
-#    dat$ClosestVariableGene[i] <- paste(values(genes[variable_genes])$symbol[which.min(closest_variable_gene)],collapse=',')
-#    dat$ClosestVariableGeneDistance[i] <- min(closest_variable_gene, na.rm = TRUE)
-#    op <- findOverlaps(region.gr, aging_dmcs)
-#    if(length(op)>0){
-#      dat$AgingDMC[i] <- values(aging_dmcs)$mean.diff[subjectHits(op)]
-#    }
     op <- findOverlaps(region.gr,promoters)
     if(length(op)>0){
       dat$promoter[i] <- paste(values(promoters)$symbol[subjectHits(op)],collapse=',')
     }else{
       dat$promoter[i] <- NA
     }
-#    op <- which(unlist(sapply(hox_cluster, function(x,y){
-#      length(queryHits(findOverlaps(x,y)))>0
-#    }, y=region.gr)))
-#    if(length(op)>0){
-#      dat$Hox[i] <- names(hox_cluster)[op]
-#    }
-#    op <- findOverlaps(region.gr,reg.elements.gr)
-#    if(length(op)>0){
-#      reg.element <- unname(unlist(values(reg.elements.gr))[subjectHits(op)])
-#      dat$enhancer_annotation[i] <- paste(reg.elements[reg.element,'Annotation'],collapse=',')
-#      dat$enhancer_annotation_gene_name[i] <- paste(reg.elements[reg.element,'Gene.Name'],collapse=',')
-#    }else{
-#      dat$enhancer_annotation[i] <- NA
-#      dat$enhancer_annotation_gene_name[i] <- NA
-#    }
     for(j in 1:length(tfs.all)){
       tf.gr <- makeGRangesFromDataFrame(read.table(tfs.files.all[[j]],sep = '\t'),seqnames.field = 'V1', start.field = 'V2', end.field = 'V3')
       op <- findOverlaps(region.gr,tf.gr)
@@ -134,10 +105,6 @@ validateMBDesigner <- function(csv,
     if(length(pattern.match)>0){
       dat[i, 'pu1_motif'] <- 'PU1'
     }
-#    op <- findOverlaps(region.gr, pu1.chip)
-#    if(length(op)>0){
-#      dat[i, 'pu1_chip'] <- 'PU1'
-#    }
     for(j in 1:nrow(hema.motifs)){
       tf.name <- hema.motifs[j , 'TF']
       pattern.match <- matchPattern(hema.motifs[j, 'Motif'], region.seq, max.mismatch = 1)
@@ -150,10 +117,9 @@ validateMBDesigner <- function(csv,
   return(dat)
 }
 
-# What happens with line 499, Always_methylated19
-mb_id <- '4243'
-res <- validateMBDesigner(paste0('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_output/Designer/', mb_id, '-design-summary.csv'))
-input <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_input/frame_cleartext.csv')
+mb_id <- '1234'
+res <- validateMBDesigner(paste0('MB_output/Designer/', mb_id, '-design-summary.csv'))
+input <- read.csv('MB_input/frame_cleartext.csv')
 output.gr <- makeGRangesFromDataFrame(res, seqnames.field = 'chr', start.field = 'amplicon_start', end.field = 'amplicon_end')
 min_dists <- c()
 for(i in 1:length(output.gr)){
@@ -168,7 +134,7 @@ if(any(!(1:nrow(res)%in%subjectHits(op)))){
   print('Something is wrong')
 }
 res <- data.frame(res[subjectHits(op), ], input[queryHits(op), ])
-write.csv(res, paste0('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/MB_output/Designer/', mb_id, '-design-summary_annotated.csv'))
+write.csv(res, paste0('MB_output/Designer/', mb_id, '-design-summary_annotated.csv'))
 
 library(ggsci)
 plot_theme <- theme(panel.background = element_blank(),
@@ -192,7 +158,7 @@ for(ty in unique(plot_base$Type)){
   to_plot <- rbind(to_plot, data.frame(plyr::count(plot_base[plot_base$Type%in%ty, 'AgingDMC']), Type=ty))
 }
 plot <- ggplot(to_plot, aes(x="", y=freq, fill=x))+geom_bar(stat="identity", width=1, color="white")+plot_theme+scale_fill_tron()+ylab("")+xlab("")+facet_wrap(Type~., ncol=3)
-ggsave('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/plots/amplicons_aging.pdf',
+ggsave('amplicons_aging.pdf',
        height=100,
        width=100,
        unit='mm')
@@ -202,7 +168,7 @@ for(ty in unique(plot_base$Type)){
   to_plot <- rbind(to_plot, data.frame(plyr::count(plot_base[plot_base$Type%in%ty, 'Enhancer']), Type=ty))
 }
 plot <- ggplot(to_plot, aes(x="", y=freq, fill=x))+geom_bar(stat="identity", width=1, color="white")+plot_theme+scale_fill_tron()+ylab("")+xlab("")+facet_wrap(Type~., ncol=3)
-ggsave('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/plots/amplicons_enhancer.pdf',
+ggsave('amplicons_enhancer.pdf',
        height=100,
        width=100,
        unit='mm')

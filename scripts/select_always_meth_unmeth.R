@@ -6,9 +6,9 @@ library(data.table)
 library(RnBeads)
 library(RnBeads.mm10)
 
-report <- '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/rnb_report_20211020_differential/'
-output <- '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/meth_unmeth/'
-config_file <- '/users/mscherer/cluster/project/Methylome/src/selection_pipeline/config.yaml'
+report <- 'RnBeads/rnb_report/'
+output <- 'meth_unmeth/'
+config_file <- '../config.yaml'
 config <- yaml.load_file(config_file)
 
 
@@ -63,7 +63,7 @@ dmrs <- lapply(all.comparisons,function(comp){
     return(list(diff.positive,diff.negative))
 })
 
-source('/users/mscherer/cluster/project/Methylome/src/selection_pipeline/checkForCutSite.R')
+source('../checkForCutSite.R')
 
 always_meth <- list.files(output,pattern='always_meth.csv', full.names=TRUE)
 always_meth <- checkForCutSite(read.csv(always_meth), config=config_file, number=75, sort.col='random', decreasing = FALSE)

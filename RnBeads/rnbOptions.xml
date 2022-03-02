@@ -1,16 +1,14 @@
 <rnb.xml>
 	<analysis.name>Cabezas Mouse HSCs</analysis.name>
 	<logging>true</logging>
-	<data.source>/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/data,/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/sample_annotation.csv,bismarkCov</data.source>
-	<dir.reports>/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/rnb_report_20211021_differential_non_pairwise_all_samples/</dir.reports>
+	<data.source>RnBeads/data,annotation/sample_annotation.csv,bismarkCov</data.source>
+	<dir.reports>RnBeads/rnb_report/</dir.reports>
 	<data.type>bs.bed.dir</data.type>
-	<email>michael.scherer@crg.eu</email>
 	<assembly>mm10</assembly>
 	<columns.pairing null="null"></columns.pairing>
 	<analyze.sites>true</analyze.sites>
 	<region.types>tiling,promoters,cpgislands</region.types>
 	<region.aggregation>mean</region.aggregation>
-	<preanalysis.script>/users/lvelten/project/Methylome/src/selection_pipeline/RnBeads/preanalysis.R</preanalysis.script>
 	<region.subsegments>0</region.subsegments>
 	<region.subsegments.types null="null"></region.subsegments.types>
 	<identifiers.column>sampleID</identifiers.column>
@@ -66,7 +64,6 @@
 	<inference.max.cell.type.markers>50000</inference.max.cell.type.markers>
 	<inference.top.cell.type.markers>500</inference.top.cell.type.markers>
 	<inference.sva.num.method>leek</inference.sva.num.method>
-	<inference.age.column>Age 1. ICI (years)</inference.age.column>
 	<inference.age.prediction>true</inference.age.prediction>
 	<inference.age.prediction.training>false</inference.age.prediction.training>
 	<inference.age.prediction.predictor null="null"></inference.age.prediction.predictor>
@@ -100,7 +97,6 @@
 	<differential.adjustment.celltype>true</differential.adjustment.celltype>
 	<differential.enrichment.go>true</differential.enrichment.go>
 	<differential.enrichment.lola>true</differential.enrichment.lola>
-	<differential.enrichment.lola.dbs>/users/lvelten/project/Methylome/misc/LOLACore</differential.enrichment.lola.dbs>
 	<differential.report.sites>true</differential.report.sites>
 	<export.to.bed>true</export.to.bed>
 	<export.to.trackhub>bigBed,bigWig</export.to.trackhub>

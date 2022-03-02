@@ -2,25 +2,24 @@
 #' This script is used to deteremine intermediately methylated sites from the RnBeads
 #' set, focusing only on the HSCs
 
-#.libPaths(c('/users/mscherer/R/R-4.1.2',.libPaths()))
 library(yaml)
 library(data.table)
 library(RnBeads)
 library(RnBeads.mm10)
 
-rnb_set_path <- '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/rnb_report_20211004_reduced/cluster_run/preprocessing_RnBSet/'
-out_folder <- '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/IMS/'
-all_dmrs <- c('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_HSC.csv',
-              '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP.csv',
-              '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP1.csv',
-              '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP2.csv')
-pdrs <- c('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274424/PDR_3/PDR_GSM1274424.csv',
-          '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274425/PDR_3/PDR_GSM1274425.csv',
-          '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274426/PDR_3/PDR_GSM1274426.csv')
-pdr_annotations <- c('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274424/PDR/annotation.RData',
-                     '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274425/PDR/annotation.RData',
-                     '/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/GSM1274426/PDR/annotation.RData')
-config_file <- '/users/mscherer/cluster/project/Methylome/src/selection_pipeline/config.yaml'
+rnb_set_path <- 'RnBeads/rnb_report_20211004_reduced/cluster_run/preprocessing_RnBSet/'
+out_folder <- 'IMC/'
+all_dmrs <- c('DMRs/high_filtered_HSC.csv',
+              'DMRs/high_filtered_MPP.csv',
+              'DMRs/high_filtered_MPP1.csv',
+              'DMRs/high_filtered_MPP2.csv')
+pdrs <- c('WSH/GSM1274424/PDR/PDR_GSM1274424.csv',
+          'WSH/GSM1274425/PDR/PDR_GSM1274425.csv',
+          'WSH/GSM1274426/PDR/PDR_GSM1274426.csv')
+pdr_annotations <- c('WSH/GSM1274424/PDR/annotation.RData',
+                     'WSH/GSM1274425/PDR/annotation.RData',
+                     'WSH/GSM1274426/PDR/annotation.RData')
+config_file <- '../config.yaml'
 config <- yaml.load_file(config_file)
 load(pdr_annotations[1])
 for(i in 2:length(pdr_annotations)){
@@ -38,7 +37,7 @@ for(i in 1:length(pdr_annotations)){
 }
 annotation <- last_anno
 
-source('/users/mscherer/cluster/project/Methylome/src/selection_pipeline/checkForCutSite.R')
+source('../scripts/checkForCutSite.R')
 
 rnb_set <- load.rnb.set(rnb_set_path)
 anno_fr <- annotation(rnb_set)
@@ -83,9 +82,9 @@ res <- checkForCutSite(na.omit(meth_data_fr),
 if(!dir.exists(out_folder)){
   system(paste('mkdir', out_folder))
 }
-write.csv(res, paste0(out_folder, '/IMS_annotated_all.csv'))
+write.csv(res, paste0(out_folder, '/IMC_annotated_all.csv'))
 tfbs_sites <- colnames(res)[(which(colnames(res)=='GCContent')+1):ncol(res)]
 tfbs_frame <- res[, tfbs_sites]
 all_nas <- apply(tfbs_frame, 1, function(x)all(is.na(x)))
 res <- res[!all_nas, ]
-write.csv(res, paste0(out_folder, '/IMS_annotated.csv'))
+write.csv(res, paste0(out_folder, '/IMC_annotated.csv'))

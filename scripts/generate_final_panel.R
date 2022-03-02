@@ -14,15 +14,15 @@ n_meth <- 20
 n_unmeth <- 20
 n_primers <- 10
 
-hsc_dmrs <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_HSC.csv')
-mpp1_dmrs <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP1.csv')
-mpp2_dmrs <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP2.csv')
-mpp_dmrs <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/DMRs/high_filtered_MPP.csv')
-imrs <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/IMS/IMS_annotated.csv')
-wsh <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/WSH/filtered_qFDRP_GSM1274424/filtered_qFDRP_GSM1274424.csv')
-non_cut <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/non_cut_amplicons.csv')
-always_meth <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/meth_unmeth/always_meth_filtered.csv')
-always_unmeth <- read.csv('/users/mscherer/cluster/project/Methylome/analysis/selection_pipeline/RnBeads/meth_unmeth/always_unmeth_filtered.csv')
+hsc_dmrs <- read.csv('DMRs/high_filtered_HSC.csv')
+mpp1_dmrs <- read.csv('DMRs/high_filtered_MPP1.csv')
+mpp2_dmrs <- read.csv('DMRs/high_filtered_MPP2.csv')
+mpp_dmrs <- read.csv('DMRs/high_filtered_MPP.csv')
+imrs <- read.csv('IMC/IMC_annotated.csv')
+wsh <- read.csv('WSH/filtered_qFDRP_GSM1274424/filtered_qFDRP_GSM1274424.csv')
+non_cut <- read.csv('non_cut_amplicons.csv')
+always_meth <- read.csv('meth_unmeth/always_meth_filtered.csv')
+always_unmeth <- read.csv('meth_unmeth/always_unmeth_filtered.csv')
 
 all_frames <- list(HSC=hsc_dmrs,
                    MPP1=mpp1_dmrs,

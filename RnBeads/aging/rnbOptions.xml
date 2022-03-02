@@ -1,11 +1,11 @@
 <rnb.xml>
 	<analysis.name>Sun Mouse HSC aging</analysis.name>
 	<logging>true</logging>
-	<data.source>/users/lvelten/project/Methylome/data/external/Sun2014/bed,/users/lvelten/project/Methylome/data/external/Sun2014/sample_annotation_reduced.csv,filename</data.source>
-	<dir.reports>/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/aging/rnb_report_20211027_reduced/</dir.reports>
+	<data.source>/users/lvelten/project/Methylome/data/external/Sun2014/bed/mm10,/users/lvelten/project/Methylome/data/external/Sun2014/sample_annotation_mm10.csv,filename</data.source>
+	<dir.reports>/users/lvelten/project/Methylome/analysis/selection_pipeline/RnBeads/aging/rnb_report_20211109_mm10/</dir.reports>
 	<data.type>bs.bed.dir</data.type>
 	<email>michael.scherer@crg.eu</email>
-	<assembly>mm9</assembly>
+	<assembly>mm10</assembly>
 	<columns.pairing null="null"></columns.pairing>
 	<analyze.sites>true</analyze.sites>
 	<region.types>tiling,promoters,cpgislands</region.types>
@@ -28,8 +28,7 @@
 	<import.skip.object.check>false</import.skip.object.check>
 	<import.idat.chunk.size null="null"></import.idat.chunk.size>
 	<import.sex.prediction>true</import.sex.prediction>
-    <import.bed.style>custom</import.bed.style>
-    <import.bed.columns names="chr,start,end,strand,meth,coverage,c,t">1,2,3,7,4,5,6,NA</import.bed.columns>
+    <import.bed.style>bismarkCov</import.bed.style>
 	<qc>true</qc>
 	<qc.boxplots>true</qc.boxplots>
 	<qc.barplots>true</qc.barplots>

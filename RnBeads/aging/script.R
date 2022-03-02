@@ -1,6 +1,6 @@
 library(RnBeads)
 theme_set(theme_bw())
-xml.file <- "/users/lvelten/project/Methylome/src/selection_pipeline/RnBeads/aging/rnbOptions.xml"
+xml.file <- "/users/lvelten/project/Methylome/src/selection_pipeline/RnBeads/aging/mm10/rnbOptions.xml"
 arch <- new("ClusterArchitectureSGE")
 arch <- setExecutable(arch,"R","/users/lvelten/mscherer/conda/envs/rnbeads/bin/R")
 arch <- setExecutable(arch,"Rscript","/users/lvelten/mscherer/conda/envs/rnbeads/bin/Rscript")

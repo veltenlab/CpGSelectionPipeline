@@ -49,4 +49,4 @@ After successful completion of all of these scripts, the final panel can be gene
 
 # Contact
 
-You can contact [Michael Scherer](michael.scherer@crg.eu) for questions and suggestions.
+You can contact [Michael Scherer](mailto:michael.scherer@crg.eu) for questions and suggestions.

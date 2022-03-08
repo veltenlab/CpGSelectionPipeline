@@ -6,13 +6,14 @@
 #' @param config The parsed configuration
 #' @param sort.col The sorting column for the input table
 #' @param decreasing Decreasing order?
+#' @param use.extended Should the cutsite be padded by two Cs to check for no additional CpGs
 #' @return A modified version of \code{input} with only those lines containing a cutsite for the specified enzyme
 checkForCutSite <- function(dat,
                             number,
                             config='../config.yaml',
                             sort.col=c('mean.diff', 'mean.diff.1', 'mean.diff.2'),
-                            decreasing=TRUE){
-
+                            decreasing=TRUE,
+                            use.extended=FALSE){
   require(yaml)
   require(data.table)
   require(RnBeads)
@@ -101,6 +102,14 @@ checkForCutSite <- function(dat,
       extended.region.seq <- seq[extended.region.start:extended.region.end]
       res.extended <- matchPattern(cut.seq,extended.region.seq)
       if(length(res)==1 & length(res.extended)==1){
+        if(use.extended){
+          extended.cut1 <- matchPattern(DNAString(paste0('C', config[['general']][['cut_seq']])), sel.seq)
+          extended.cut2 <- matchPattern(DNAString(paste0(config[['general']][['cut_seq']], 'G')), sel.seq)
+          if(length(extended.cut1)>0 | length(extended.cut2)>0){
+            i <- i+1
+            next
+          }
+        }
         dat$regionStart[i] <- region.start
         dat$regionEnd[i] <- region.end
         dat$cutsiteInRegion[i] <- paste0(start(res), '-', end(res))

@@ -1,6 +1,6 @@
 general:
  cut_seq: GCGC
- genome: mm10
+ genome: hg19
  pu1_motif: AGGAGT
  max_cpgs: 10
 
@@ -37,17 +37,3 @@ non_cut:
  none: 23
  min_gc: 0.40
  max_gc: 0.50
-
-annotations:
- #from this publication https://doi.org/10.1016/j.stem.2010.07.016
- tf_chip: TFBS_Wilson/bed/mm10/
- #from this publication https://doi.org/10.1126/science.1256271 Opening
- enhancer_catalog: H3K27Ac.csv
- enhancer_catalog_bed: H3K27Ac_mm10.bed
- #from this publication https://doi.org/10.1016/j.cell.2012.01.056 
- pu1_chip: GSM774291_FLDN1PU.1I_mm10.bed
- hema_tf_motifs: annotation/Robert_max_TFBSs.csv
- #from this publication https://doi.org/10.1182/blood-2016-05-716480
- variable_genes: annotation/variable_genes_Nestorowa2015.csv
- #available upon request to michael.scherer@crg.eu
- aging_dmcs: selected_dmrs.csv

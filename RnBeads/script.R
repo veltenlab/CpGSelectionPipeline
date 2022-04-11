@@ -9,4 +9,4 @@ rnb.cr <- setModuleResourceRequirements(rnb.cr,c(h_vmem="120G",virtual_free="120
 rnb.cr <- setModuleResourceRequirements(rnb.cr,c(h_vmem="120G",virtual_free="120G",h_rt="05:00:00", queue='long-sl7'),"differential")
 rnb.cr <- setModuleNumCores(rnb.cr,1L,"all")
 rnb.cr <- setModuleNumCores(rnb.cr,1L,"exploratory")
-run(rnb.cr, "rnB_Cabezas", xml.file, queue="short-sl7")
+run(rnb.cr, "rnB_Kulis", xml.file, queue="short-sl7")

@@ -10,15 +10,14 @@ library(RnBeads.mm10)
 rnb_set_path <- 'RnBeads/rnb_report_20211004_reduced/cluster_run/preprocessing_RnBSet/'
 out_folder <- 'IMC/'
 all_dmrs <- c('DMRs/high_filtered_HSC.csv',
-              'DMRs/high_filtered_MPP.csv',
-              'DMRs/high_filtered_MPP1.csv',
-              'DMRs/high_filtered_MPP2.csv')
-pdrs <- c('WSH/GSM1274424/PDR/PDR_GSM1274424.csv',
-          'WSH/GSM1274425/PDR/PDR_GSM1274425.csv',
-          'WSH/GSM1274426/PDR/PDR_GSM1274426.csv')
-pdr_annotations <- c('WSH/GSM1274424/PDR/annotation.RData',
-                     'WSH/GSM1274425/PDR/annotation.RData',
-                     'WSH/GSM1274426/PDR/annotation.RData')
+              'DMRs/high_filtered_preB.csv',
+              'DMRs/high_filtered_naiveB.csv',
+              'DMRs/high_filtered_gcB.csv',
+              'DMRs/high_filtered_memB.csv')
+pdrs <- c('WSH/HSC_1/PDR/PDR_HSC_1',
+          'WSH/HSC_2/PDR/PDR_HSC_2')
+pdr_annotations <- c('WSH/HSC_1/PDR/annotation.RData',
+                     'WSH/HSC_2/PDR/annotation.RData')
 config_file <- '../config.yaml'
 config <- yaml.load_file(config_file)
 load(pdr_annotations[1])
@@ -47,18 +46,16 @@ dmrs_gr <- makeGRangesFromDataFrame(dmrs, end='Start')
 dmrs_gr <- resize(dmrs_gr, width = 500, fix = 'center')
 op <- findOverlaps(anno_gr, dmrs_gr)
 anno_gr <- anno_gr[-queryHits(op)]
-meth_data <- meth(rnb_set)[, c("GSM1274424",
-                               "GSM1274425",
-                               "GSM1274426")]
+meth_data <- meth(rnb_set)[, c("HSC_1",
+                               "HSC_2")]
 meth_data <- meth_data[-queryHits(op), ]
 is_intermediate <- apply(meth_data, 1, function(x){
   all(x>0.25&x<0.75)
 })
 meth_data <- meth_data[is_intermediate, ]
 anno_gr <- anno_gr[is_intermediate]
-covg_data <- covg(rnb_set)[, c("GSM1274424",
-                               "GSM1274425",
-                               "GSM1274426")]
+covg_data <- covg(rnb_set)[, c("HSC_1",
+                               "HSC_2")]
 covg_data <- covg_data[-queryHits(op), ][is_intermediate, ]
 mean_covg <- rowMeans(covg_data)
 too_high <- mean_covg>quantile(mean_covg, .95)

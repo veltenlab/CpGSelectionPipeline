@@ -19,21 +19,10 @@ checkForCutSite <- function(dat,
   require(RnBeads)
   require(RnBeads.mm10)
   
-  hox_cluster <- c('HoxA'=GRanges('chr6:52150000-52275000'),
-                   'HoxB'=GRanges('chr11:96280000-96375000'),
-                   'HoxC'=GRanges('chr15:102910000-103040000'),
-                   'HoxD'=GRanges('chr2:74665000-74765000'))
   config <- yaml.load_file(config)
   cut.seq <- DNAString(config[['general']][['cut_seq']])
   max.cpgs <- as.numeric(config[['general']][['max_cpgs']])
-  hema.motifs <- read.csv(config[['annotations']][['hema_tf_motifs']])
-  pu1.motif <- DNAString(config[['general']][['pu1_motif']])
-  pu1.chip <- read.table(config[['annotations']][['pu1_chip']])
-  pu1.chip$V2 <- as.numeric(pu1.chip$V2)
-  pu1.chip$V3 <- as.numeric(pu1.chip$V3)
-  pu1.chip <- makeGRangesFromDataFrame(na.omit(pu1.chip), seqnames.field = 'V1', start.field = 'V2', end.field = 'V3', strand.field = 'V6')
   gen.version <- config[['general']][['genome']]
-  variable_genes <- as.character(read.csv(config[['annotations']][['variable_genes']])[, 2])
   if(gen.version=='mm10'){
     suppressPackageStartupMessages(library(BSgenome.Mmusculus.UCSC.mm10))
     genome <- BSgenome.Mmusculus.UCSC.mm10
@@ -58,19 +47,7 @@ checkForCutSite <- function(dat,
   dat$promoter <- NA
   dat$enhancer_annotation <- NA
   dat$enhancer_annotation_gene_name <- NA
-  dat$pu1_motif <- NA
-  dat$pu1_chip <- NA
-  dat$Hox <- NA
   dat$GCContent <- NA
-  dat$ClosestVariableGene <- NA
-  dat$ClosestVariableGeneDistance <- NA
-  dat$AgingDMC <- NA
-  dat[hema.motifs$TF] <- NA
-  tfs.files.all <- list.files(config[['annotations']][['tf_chip']],full.names=TRUE)
-  tfs.all <- gsub('.bed', '', list.files(config[['annotations']][['tf_chip']]))
-  for(tf in tfs.all){
-    dat[,tf] <- NA
-  }
   cpgs <- makeGRangesFromDataFrame(rnb.annotation2data.frame(rnb.get.annotation("CpG", assembly = gen.version)))
   genes <- unlist(rnb.get.annotation('genes',assembly = gen.version))
   names(genes) <- gsub('chr[[:alnum:]][[:punct:]]', '', names(genes))
@@ -81,11 +58,6 @@ checkForCutSite <- function(dat,
   reg.elements.tab <- read.table(config[['annotations']][['enhancer_catalog_bed']],sep='\t')
   reg.elements.gr <- makeGRangesFromDataFrame(reg.elements.tab,seqnames.field = 'V1', start.field = 'V2', end.field = 'V3', strand.field = 'V4')                    
   values(reg.elements.gr) <- reg.elements.tab$V5
-  aging_dmcs <- read.csv(config[['annotations']][['aging_dmcs']])
-  aging_dmcs <- makeGRangesFromDataFrame(aging_dmcs, seqnames.field = 'Chromosome',
-                                         start.field='Start',
-                                         end.field='Start',
-                                         keep.extra.columns=TRUE)
   while(num<number && i<nrow(dat)){
     chr <- as.character(dat[i,"Chromosome"])
     start <- as.numeric(as.character(dat[i,"Start"]))
@@ -117,29 +89,16 @@ checkForCutSite <- function(dat,
         dat$GCContent[i] <- (freq['C']+freq['G'])/length(extended.region.seq)
         region.gr <- GRanges(paste0(chr,':',region.start,'-',region.end))
         op <- findOverlaps(region.gr,genes)
-        closest_variable_gene <- distance(region.gr, genes[variable_genes])
-        dat$ClosestVariableGene[i] <- paste(values(genes[variable_genes])$symbol[which.min(closest_variable_gene)],collapse=',')
-        dat$ClosestVariableGeneDistance[i] <- min(closest_variable_gene, na.rm = TRUE)
         if(length(op)>0){
           dat$gene[i] <- paste(values(genes)$symbol[subjectHits(op)],collapse=',')
         }else{
           dat$gene[i] <- NA
-        }
-        op <- findOverlaps(region.gr, aging_dmcs)
-        if(length(op)>0){
-          dat$AgingDMC[i] <- values(aging_dmcs)$mean.diff[subjectHits(op)]
         }
         op <- findOverlaps(region.gr,promoters)
         if(length(op)>0){
           dat$promoter[i] <- paste(values(promoters)$symbol[subjectHits(op)],collapse=',')
         }else{
           dat$promoter[i] <- NA
-        }
-        op <- which(unlist(sapply(hox_cluster, function(x,y){
-          length(queryHits(findOverlaps(x,y)))>0
-        }, y=region.gr)))
-        if(length(op)>0){
-          dat$Hox[i] <- names(hox_cluster)[op]
         }
         op <- findOverlaps(region.gr,reg.elements.gr)
         if(length(op)>0){
@@ -157,24 +116,6 @@ checkForCutSite <- function(dat,
             dat[i,tfs.all[j]] <- tfs.all[j]
           }else{
             dat[i,tfs.all[j]] <- NA
-          }
-        }
-        tf.region.start <- region.start-10
-        tf.region.end <- region.end+10
-        tf.region.seq <- seq[tf.region.start:tf.region.end]
-        pattern.match <- matchPattern(pu1.motif, tf.region.seq, max.mismatch = 1)
-        if(length(pattern.match)>0){
-          dat[i, 'pu1_motif'] <- 'PU1'
-        }
-        op <- findOverlaps(region.gr, pu1.chip)
-        if(length(op)>0){
-          dat[i, 'pu1_chip'] <- 'PU1'
-        }
-        for(j in 1:nrow(hema.motifs)){
-          tf.name <- hema.motifs[j , 'TF']
-          pattern.match <- matchPattern(hema.motifs[j, 'Motif'], tf.region.seq, max.mismatch = 1)
-          if(length(pattern.match)>0){
-            dat[i, tf.name] <- tf.name
           }
         }
         vec.all <- c(vec.all,i)

@@ -1,6 +1,6 @@
 validateMBDesigner <- function(csv,
                             config='../config.yaml'){
-  
+
   require(yaml)
   require(data.table)
   require(RnBeads)
@@ -8,7 +8,7 @@ validateMBDesigner <- function(csv,
   
   suppressPackageStartupMessages(library(BSgenome.Mmusculus.UCSC.mm10))
   genome <- BSgenome.Mmusculus.UCSC.mm10
-  dat <- read.csv(csv)
+  dat <- read.table(csv, sep='\t')
   hox_cluster <- c('HoxA'=GRanges('chr6:52150000-52275000'),
                    'HoxB'=GRanges('chr11:96280000-96375000'),
                    'HoxC'=GRanges('chr15:102910000-103040000'),
@@ -38,17 +38,12 @@ validateMBDesigner <- function(csv,
   dat$cutsiteInRegion <- NA
   dat$gene <- NA
   dat$promoter <- NA
-  dat$enhancer_annotation <- NA
-  dat$enhancer_annotation_gene_name <- NA
   dat$pu1_motif <- NA
   dat$pu1_chip <- NA
   dat$Hox <- NA
   dat$GCContent <- NA
   dat$CpGCount <- NA
   dat$HhaCutsites <- NA
-  dat$ClosestVariableGene <- NA
-  dat$ClosestVariableGeneDistance <- NA
-  dat$AgingDMC <- NA
   dat[hema.motifs$TF] <- NA
   tfs.files.all <- list.files(config[['annotations']][['tf_chip']],full.names=TRUE)
   tfs.all <- gsub('.bed', '', list.files(config[['annotations']][['tf_chip']]))
@@ -91,33 +86,11 @@ validateMBDesigner <- function(csv,
     }else{
       dat$gene[i] <- NA
     }
-    closest_variable_gene <- distance(region.gr, genes[variable_genes])
-    dat$ClosestVariableGene[i] <- paste(values(genes[variable_genes])$symbol[which.min(closest_variable_gene)],collapse=',')
-    dat$ClosestVariableGeneDistance[i] <- min(closest_variable_gene, na.rm = TRUE)
-    op <- findOverlaps(region.gr, aging_dmcs)
-    if(length(op)>0){
-      dat$AgingDMC[i] <- values(aging_dmcs)$mean.diff[subjectHits(op)]
-    }
     op <- findOverlaps(region.gr,promoters)
     if(length(op)>0){
       dat$promoter[i] <- paste(values(promoters)$symbol[subjectHits(op)],collapse=',')
     }else{
       dat$promoter[i] <- NA
-    }
-    op <- which(unlist(sapply(hox_cluster, function(x,y){
-      length(queryHits(findOverlaps(x,y)))>0
-    }, y=region.gr)))
-    if(length(op)>0){
-      dat$Hox[i] <- names(hox_cluster)[op]
-    }
-    op <- findOverlaps(region.gr,reg.elements.gr)
-    if(length(op)>0){
-      reg.element <- unname(unlist(values(reg.elements.gr))[subjectHits(op)])
-      dat$enhancer_annotation[i] <- paste(reg.elements[reg.element,'Annotation'],collapse=',')
-      dat$enhancer_annotation_gene_name[i] <- paste(reg.elements[reg.element,'Gene.Name'],collapse=',')
-    }else{
-      dat$enhancer_annotation[i] <- NA
-      dat$enhancer_annotation_gene_name[i] <- NA
     }
     for(j in 1:length(tfs.all)){
       tf.gr <- makeGRangesFromDataFrame(read.table(tfs.files.all[[j]],sep = '\t'),seqnames.field = 'V1', start.field = 'V2', end.field = 'V3')
@@ -131,10 +104,6 @@ validateMBDesigner <- function(csv,
     pattern.match <- matchPattern(pu1.motif, region.seq, max.mismatch = 1)
     if(length(pattern.match)>0){
       dat[i, 'pu1_motif'] <- 'PU1'
-    }
-    op <- findOverlaps(region.gr, pu1.chip)
-    if(length(op)>0){
-      dat[i, 'pu1_chip'] <- 'PU1'
     }
     for(j in 1:nrow(hema.motifs)){
       tf.name <- hema.motifs[j , 'TF']
@@ -175,6 +144,7 @@ plot_theme <- theme(panel.background = element_blank(),
                     axis.ticks=element_blank(),
                     strip.background = element_blank(),
                     legend.key=element_rect(color=NA, fill=NA),
+                    #axis.text.x=element_text(angle=45, hjust=1, vjust = 1),
                     axis.text.x=element_blank(),
                     axis.title.x=element_blank(),
                     axis.ticks.x=element_blank(),
@@ -201,84 +171,4 @@ plot <- ggplot(to_plot, aes(x="", y=freq, fill=x))+geom_bar(stat="identity", wid
 ggsave('amplicons_enhancer.pdf',
        height=100,
        width=100,
-       unit='mm')
-
-dat <- res
-types <- gsub('[0-9]', '', dat$Type)
-types[grep('high', types)] <- 'DMC'
-types[types%in%'IMR'] <- 'IMC'
-to_plot <- plyr::count(types)
-colnames(to_plot) <- c('Type','Count')
-plot_theme <- theme(panel.background = element_blank(),
-                    panel.grid=element_blank(),
-                    text=element_text(color='black',size=10),
-                    axis.text=element_text(color='black',size=5),
-                    axis.ticks=element_blank(),
-                    strip.background = element_blank(),
-                    legend.key=element_rect(color=NA, fill=NA),
-                    axis.text.x=element_blank(),
-                    axis.title.x=element_blank(),
-                    axis.ticks.x=element_blank(),
-                    legend.title=element_blank(),
-                    panel.spacing = unit(.1, "lines"))
-to_plot$Type <- factor(to_plot$Type, levels=c('Non_cut',
-                                              'Always_methylated',
-                                              'Always_unmethylated',
-                                              'DMC',
-                                              'IMC',
-                                              'WSH'))
-to_plot <- to_plot[order(to_plot$Type), ]
-to_plot$prop <- to_plot$Count/sum(to_plot$Count) *100
-to_plot$ypos <- cumsum(to_plot$prop)-0.5*to_plot$prop
-plot <- ggplot(to_plot, aes(x="", y=Count, fill=Type))+geom_bar(stat="identity", width=1, color="white")+
-  coord_polar("y", start=0)+plot_theme+scale_fill_tron()+ylab("")+xlab("")+geom_text(aes(label = Count),
-                                                                                     position = position_stack(vjust = 0.5))
-ggsave('amplicon_type_distribution.png',
-       height=150,
-       width=150,
-       unit='mm')
-
-plot_theme <- theme(panel.background = element_blank(),
-                    panel.grid=element_blank(),
-                    text=element_text(color='black',size=10),
-                    axis.text.x = element_text(angle=45, hjust=1, color='black', size=8),
-                    strip.background = element_blank(),
-                    legend.key=element_rect(color=NA, fill=NA),
-                    legend.title=element_blank(),
-                    panel.spacing = unit(.1, "lines"))
-
-dat <- read.csv('4135-design-summary_annotated.csv')
-types <- gsub('[0-9]', '', dat$Type)
-types[grep('high', types)] <- 'DMC'
-types[types%in%'IMR'] <- 'IMC'
-dat$Type <- types
-tf_names <- colnames(dat)
-start_tf <- which(tf_names%in%'CpGCount')+1
-end_tf <- which(tf_names%in%"Scl")
-tf_names <- tf_names[start_tf:end_tf]
-counts_tfs <- unlist(lapply(tf_names, function(x){
-  sum(!is.na(dat[, x]))
-}))
-to_plot <- data.frame(Count=counts_tfs, TF=tf_names)
-to_plot$TF <- factor(to_plot$TF, levels=to_plot$TF[order(to_plot$Count, decreasing=T)])
-plot <- ggplot(to_plot, aes(x=TF, y=Count))+geom_bar(stat="identity", width=1, color="white")+
-  plot_theme
-ggsave('amplicon_TF_all_distribution.png',
-       height=75,
-       width=150,
-       unit='mm')
-
-to_plot <- c()
-for(type in unique(dat$Type)){
-  sel_dat <- subset(dat, subset=Type==type)
-  counts_tfs <- unlist(lapply(tf_names, function(x){
-    sum(!is.na(sel_dat[, x]))
-  }))
-  to_plot <- rbind(to_plot, data.frame(Type=type, TF=factor(tf_names, levels=tf_names[order(counts_tfs, decreasing=TRUE)]), Count=counts_tfs))
-}
-plot <- ggplot(to_plot, aes(x=TF, y=Count))+geom_bar(stat="identity", width=1, color="white")+
-  plot_theme+facet_wrap(Type~., ncol=3)
-ggsave('amplicon_TF_stratified.png',
-       height=150,
-       width=300,
        unit='mm')

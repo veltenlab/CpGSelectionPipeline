@@ -4,7 +4,7 @@
 	<data.source>RnBeads/data,annotation/sample_annotation.csv,bismarkCov</data.source>
 	<dir.reports>RnBeads/rnb_report/</dir.reports>
 	<data.type>bs.bed.dir</data.type>
-	<assembly>mm10</assembly>
+	<assembly>hg19</assembly>
 	<columns.pairing null="null"></columns.pairing>
 	<analyze.sites>true</analyze.sites>
 	<region.types>tiling,promoters,cpgislands</region.types>
@@ -26,7 +26,7 @@
 	<import.skip.object.check>false</import.skip.object.check>
 	<import.idat.chunk.size null="null"></import.idat.chunk.size>
 	<import.sex.prediction>true</import.sex.prediction>
-    <import.bed.style>bismarkCov</import.bed.style>
+  <import.bed.style>bismarkCov</import.bed.style>
 	<qc>false</qc>
 	<qc.boxplots>true</qc.boxplots>
 	<qc.barplots>true</qc.barplots>

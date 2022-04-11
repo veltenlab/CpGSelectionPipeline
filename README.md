@@ -46,7 +46,7 @@ For each of the categories of CpGs mentioned above, a dedicated script has been 
 - Variably methylated sites are selected based on those that are not IMCs (i.e. have high PDR), but also high qFDRP scores. For this, the script ```filter_qFDRP_results.R``` is responsible.
 - To include control regions (non-digested, constitutively methylated, constitutively unmethylated), corresponding scripts have been generated in [scripts](scripts).
 
-After successful completion of all of these scripts, the final panel can be generated and uploaded to the Mission Bio Tapestri Designer tool. For this, the script ```generate_final_panel.R``` in [scripts](scripts) is targeted for. 
+After successful execution of the scripts, you can combine differend DMRs from different panels and upload them to the Tapestri Designer tool (https://designer.missionbio.com/).
 
 # Contact
 

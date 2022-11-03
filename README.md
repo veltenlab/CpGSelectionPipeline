@@ -51,3 +51,8 @@ After successful execution of the scripts, you can combine differend DMRs from d
 # Contact
 
 You can contact [Michael Scherer](mailto:michael.scherer@crg.eu) for questions and suggestions.
+
+# Citation
+
+If you use this pipeline in your publication, please cite:
+Bianchi, A., Scherer, M., Zaurin, R. et al. scTAM-seq enables targeted high-confidence analysis of DNA methylation in single cells. Genome Biol 23, 229 (2022). [https://doi.org/10.1186/s13059-022-02796-7](https://doi.org/10.1186/s13059-022-02796-7)

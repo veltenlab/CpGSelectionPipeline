@@ -13,7 +13,7 @@ General configurations of the pipeline, such as the number of CpGs to be covered
 
 # Collecting the data
 
-As an example of the pipeline, we used the Kulis et al. data from the BLUEPRINT project (https://ega-archive.org/datasets/EGAD00001001304, https://doi.org/10.1038/ng.3291). We recommend using a standard bisulfite sequencing data processing pipeline, such as [bismark](https://doi.org/10.1093/bioinformatics/btr167) for low-level data processing. Bismark output files can be used directly as input to [RnBeads](https://doi.org/10.1186/s13059-019-1664-9), the generated bam-files can be used to compute the [PDR](https://doi.org/10.1016/j.ccell.2014.10.012) and [qFDRP](https://doi.org/10.1093/nar/gkaa120). Notably, the panel designed for our current pre-print on scTAM-seq () was generated with an earlier version of the pipeline.
+As an example of the pipeline, we used the Kulis et al. data from the BLUEPRINT project (https://ega-archive.org/datasets/EGAD00001001304, https://doi.org/10.1038/ng.3291). We recommend using a standard bisulfite sequencing data processing pipeline, such as [bismark](https://doi.org/10.1093/bioinformatics/btr167) for low-level data processing. Bismark output files can be used directly as input to [RnBeads](https://doi.org/10.1186/s13059-019-1664-9), the generated bam-files can be used to compute the [PDR](https://doi.org/10.1016/j.ccell.2014.10.012) and [qFDRP](https://doi.org/10.1093/nar/gkaa120). Notably, the panel designed for our current [publication](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02796-7) on scTAM-seq was generated with an earlier version of the pipeline.
 
 # Installing dependencies
 
